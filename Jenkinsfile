@@ -20,7 +20,18 @@ pipeline {
         stage('Run Web App') {
             steps {
                 dir('webpage') {
-                    sh 'nohup python3 -m http.server 8000 > server.log 2>&1 &'
+                    sh '''
+                        echo "Stopping old server if any..."
+                        pkill -f "http.server 8000" || true
+
+                        echo "Starting server..."
+                        nohup python3 -m http.server 8000 --bind 0.0.0.0 > server.log 2>&1 &
+
+                        sleep 5
+
+                        echo "Checking running process..."
+                        ps -ef | grep http.server || true
+                    '''
                 }
             }
         }
@@ -28,12 +39,12 @@ pipeline {
 
     post {
         success {
-            echo "Web app started successfully!"
-            echo "Open: http://3.110.43.59:8000/car.html"
+            echo "✅ Web app started successfully!"
+            echo "🌐 Open: http://3.110.43.59:8000/car.html"
         }
 
         failure {
-            echo "Pipeline failed!"
+            echo "❌ Pipeline failed - check logs"
         }
     }
 }
