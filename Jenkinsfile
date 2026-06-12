@@ -13,14 +13,14 @@ pipeline {
         stage('Verify Files') {
             steps {
                 sh 'ls -la'
-                sh 'cd webpage && ls -la'
+                sh 'ls -la webpage'
             }
         }
 
-        stage('Run Python Script') {
+        stage('Run Web App') {
             steps {
                 dir('webpage') {
-                    sh 'python3 car.py'
+                    sh 'nohup python3 -m http.server 8000 > server.log 2>&1 &'
                 }
             }
         }
@@ -28,10 +28,12 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline executed successfully!'
+            echo "Web app started successfully!"
+            echo "Open: http://<JENKINS_SERVER_IP>:8000/car.html"
         }
+
         failure {
-            echo 'Pipeline failed!'
+            echo "Pipeline failed!"
         }
     }
 }
