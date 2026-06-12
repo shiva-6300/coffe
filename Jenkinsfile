@@ -29,7 +29,7 @@ pipeline {
     post {
         success {
             echo "Web app started successfully!"
-            echo "Open: http://<JENKINS_SERVER_IP>:8000/car.html"
+            echo "Open: http://3.110.43.59:8000/car.html"
         }
 
         failure {
