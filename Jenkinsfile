@@ -24,11 +24,31 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Web App') {
+            steps {
+                dir('webpage') {
+                    sh '''
+                        echo "Stopping old server..."
+                        pkill -f "http.server 8000" || true
+
+                        echo "Starting web server..."
+                        nohup python3 -m http.server 8000 --bind 0.0.0.0 > server.log 2>&1 &
+
+                        sleep 5
+
+                        echo "Checking server..."
+                        ps -ef | grep http.server || true
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo "✅ Python script executed successfully!"
+            echo "✅ Pipeline executed successfully!"
+            echo "🌐 Open: http://3.110.43.59:8000/car.html"
         }
 
         failure {
