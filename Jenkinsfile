@@ -15,13 +15,17 @@ pipeline {
                 sh '''
                 cd webpage
 
+                # create virtual environment
                 python3 -m venv venv
-                source venv/bin/activate
 
-                pip install flask
+                # install dependencies using venv (no source needed)
+                venv/bin/pip install flask
 
+                # stop old running app (if any)
                 pkill -f car.py || true
-                nohup python car.py > app.log 2>&1 &
+
+                # start new app in background
+                nohup venv/bin/python car.py > app.log 2>&1 &
                 '''
             }
         }
@@ -29,15 +33,15 @@ pipeline {
 
     post {
         success {
-            echo "✅ SUCCESS: Deployed from MAIN branch"
+            echo "✅ SUCCESS: Flask app deployed from MAIN branch on EC2"
         }
 
         failure {
-            echo "❌ FAILED: Check Jenkins logs"
+            echo "❌ FAILED: Deployment error - check Jenkins console logs"
         }
 
         always {
-            echo "🔁 Pipeline finished"
+            echo "🔁 PIPELINE COMPLETED"
         }
     }
 }
