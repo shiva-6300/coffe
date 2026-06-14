@@ -25,4 +25,18 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            echo "✅ DEPLOYMENT SUCCESS: Flask app is running on EC2"
+        }
+
+        failure {
+            echo "❌ DEPLOYMENT FAILED: Check logs in Jenkins console output"
+        }
+
+        always {
+            echo "🔁 Pipeline execution completed"
+        }
+    }
 }
