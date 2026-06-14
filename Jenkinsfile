@@ -3,30 +3,31 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/shiva-6300/coffe.git'
             }
         }
 
-        stage('Deploy') {
+        stage('Setup & Deploy') {
             steps {
                 sh '''
                 cd webpage
 
-                # create venv only if not exists
-                if [ ! -d "venv" ]; then
-                    python3 -m venv venv
-                fi
+                # Remove old virtual environment (clean build)
+                rm -rf venv
 
-                # install flask (fast + safe)
+                # Create new virtual environment
+                python3 -m venv venv
+
+                # Install Flask inside venv
                 venv/bin/pip install flask
 
-                # stop previous running app
-                pkill -f "car.py" || true
+                # Stop old running app
+                pkill -f car.py || true
 
-                # start new app
+                # Start Flask app in background
                 nohup venv/bin/python car.py > app.log 2>&1 &
                 '''
             }
@@ -35,11 +36,11 @@ pipeline {
 
     post {
         success {
-            echo "✅ SUCCESS: Flask app deployed on EC2 (MAIN branch)"
+            echo "✅ SUCCESS: Flask app deployed successfully on EC2 (MAIN branch)"
         }
 
         failure {
-            echo "❌ FAILED: Check Jenkins console logs"
+            echo "❌ FAILED: Check Jenkins console logs for errors"
         }
 
         always {
