@@ -5,7 +5,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/shiva-6300/coffe.git'
+                git branch: 'main',
+                    url: 'https://github.com/shiva-6300/coffe.git'
             }
         }
 
@@ -28,15 +29,15 @@ pipeline {
 
     post {
         success {
-            echo "✅ DEPLOYMENT SUCCESS: Flask app is running on EC2"
+            echo "✅ SUCCESS: Deployed from MAIN branch"
         }
 
         failure {
-            echo "❌ DEPLOYMENT FAILED: Check logs in Jenkins console output"
+            echo "❌ FAILED: Check Jenkins logs"
         }
 
         always {
-            echo "🔁 Pipeline execution completed"
+            echo "🔁 Pipeline finished"
         }
     }
 }
