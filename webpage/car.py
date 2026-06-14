@@ -1,8 +1,10 @@
+from flask import Flask, render_template
 
-import webbrowser
-import os
+app = Flask(__name__)
 
-file_path = os.path.abspath("car.html")
-webbrowser.open("file://" + file_path)
+@app.route('/')
+def home():
+    return render_template('car.html')
 
-print("Calculator opened in browser.")
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
