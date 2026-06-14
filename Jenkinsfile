@@ -10,24 +10,18 @@ pipeline {
             }
         }
 
-        stage('Setup & Deploy') {
+        stage('Deploy on EC2') {
             steps {
                 sh '''
                 cd webpage
 
-                # Remove old virtual environment (clean build)
                 rm -rf venv
-
-                # Create new virtual environment
                 python3 -m venv venv
 
-                # Install Flask inside venv
                 venv/bin/pip install flask
 
-                # Stop old running app
                 pkill -f car.py || true
 
-                # Start Flask app in background
                 nohup venv/bin/python car.py > app.log 2>&1 &
                 '''
             }
@@ -36,15 +30,15 @@ pipeline {
 
     post {
         success {
-            echo "✅ SUCCESS: Flask app deployed successfully on EC2 (MAIN branch)"
+            echo "✅ DEPLOYED SUCCESSFULLY ON EC2 (13.201.226.142)"
         }
 
         failure {
-            echo "❌ FAILED: Check Jenkins console logs for errors"
+            echo "❌ DEPLOYMENT FAILED - CHECK LOGS"
         }
 
         always {
-            echo "🔁 PIPELINE FINISHED"
+            echo "🔁 PIPELINE DONE"
         }
     }
 }
