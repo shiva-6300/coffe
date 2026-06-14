@@ -3,56 +3,26 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/shiva-6300/coffe.git'
+                git url: 'https://github.com/shiva-6300/coffe.git'
             }
         }
 
-        stage('Verify Files') {
+        stage('Deploy') {
             steps {
-                sh 'ls -la'
-                sh 'ls -la webpage'
+                sh '''
+                cd webpage
+
+                python3 -m venv venv
+                source venv/bin/activate
+
+                pip install flask
+
+                pkill -f car.py || true
+                nohup python car.py > app.log 2>&1 &
+                '''
             }
-        }
-
-        stage('Run Python Script') {
-            steps {
-                dir('webpage') {
-                    sh 'python3 car.py'
-                }
-            }
-        }
-
-        stage('Run Web App') {
-            steps {
-                dir('webpage') {
-                    sh '''
-                        echo "Stopping old server..."
-                        pkill -f "http.server 8000" || true
-
-                        echo "Starting web server..."
-                        nohup python3 -m http.server 8000 --bind 0.0.0.0 > server.log 2>&1 &
-
-                        sleep 5
-
-                        echo "Checking server..."
-                        ps -ef | grep http.server || true
-                    '''
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Pipeline executed successfully!"
-            echo "🌐 Open: http://3.110.43.59:8000/car.html"
-        }
-
-        failure {
-            echo "❌ Pipeline failed. Check logs."
         }
     }
 }
